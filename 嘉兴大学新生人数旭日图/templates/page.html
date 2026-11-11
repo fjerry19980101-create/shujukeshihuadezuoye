@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>嘉兴大学 2026 级新生规模分布 · 旭日图</title>
+<style>
+  :root{
+    --ink:#16233a;
+    --ink-2:#4a5872;
+    --ink-3:#8593ab;
+    --line:#e6edf7;
+    --bg:#f3f7fc;
+    --card:#ffffff;
+    --accent:#2f6fed;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 12% -10%, #e9f1ff 0%, rgba(233,241,255,0) 60%),
+      radial-gradient(900px 500px at 100% 0%, #fdf3e7 0%, rgba(253,243,231,0) 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:"Segoe UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    max-width:1560px;
+    margin:0 auto;
+    padding:26px 34px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    min-height:100%;
+  }
+
+  /* ---------- 顶部标题 ---------- */
+  .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;letter-spacing:.14em;color:var(--accent);
+    font-weight:600;text-transform:uppercase;
+  }
+  .eyebrow::before{content:"";width:22px;height:2px;border-radius:2px;background:var(--accent);display:block;}
+  h1{margin:8px 0 6px;font-size:27px;line-height:1.25;font-weight:700;letter-spacing:.01em;}
+  .sub{margin:0;color:var(--ink-2);font-size:13.5px;}
+  .sub b{color:var(--ink);font-weight:700;}
+  .actions{display:flex;gap:10px;padding-bottom:4px;}
+  button{
+    font-family:inherit;font-size:13px;font-weight:600;
+    padding:9px 16px;border-radius:10px;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--ink-2);
+    transition:.18s ease;
+  }
+  button:hover{border-color:#c9d8f2;color:var(--ink);box-shadow:0 4px 14px rgba(47,111,237,.10);transform:translateY(-1px);}
+  button.primary{
+    background:linear-gradient(180deg,#3d7bf5,#2f6fed);color:#fff;border-color:transparent;
+    box-shadow:0 6px 16px rgba(47,111,237,.28);
+  }
+  button.primary:hover{box-shadow:0 10px 22px rgba(47,111,237,.34);}
+
+  /* ---------- 指标卡 ---------- */
+  .stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;}
+  .stat{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:13px 16px;display:flex;flex-direction:column;gap:5px;
+    box-shadow:0 1px 2px rgba(22,35,58,.03);
+  }
+  .stat .k{font-size:12px;color:var(--ink-3);letter-spacing:.02em;}
+  .stat .row{display:flex;align-items:baseline;gap:6px;}
+  .stat .v{font-size:24px;font-weight:700;letter-spacing:-.01em;}
+  .stat .v.sm{font-size:18px;}
+  .stat .u{font-size:12px;color:var(--ink-3);}
+
+  /* ---------- 图表卡 ---------- */
+  .card{
+    position:relative;flex:1;min-height:0;
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    box-shadow:0 10px 30px rgba(22,35,58,.06);
+    padding:6px 10px 0;
+    display:flex;flex-direction:column;
+  }
+  .body{display:flex;flex-direction:row;flex:1;min-height:0;align-items:stretch;}
+  .chart-wrap{position:relative;flex:1;min-width:0;display:flex;}
+  #chart{width:100%;height:100%;min-height:520px;}
+
+  /* 中心文字（HTML 叠加，避免下钻后被扇区遮挡） */
+  .center-label{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    text-align:center;pointer-events:none;line-height:1.15;
+  }
+  .cl-name{display:block;font-size:12px;font-weight:700;color:#1b2a44;white-space:nowrap;margin-bottom:3px;}
+  .cl-num{display:block;font-size:22px;font-weight:700;color:#1b2a44;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+  .cl-num i{font-style:normal;font-size:11px;color:var(--ink-3);margin-left:3px;font-weight:500;letter-spacing:0;}
+
+  /* 面包屑 */
+  .crumbs{
+    position:absolute;left:50%;bottom:6px;transform:translateX(-50%);
+    display:flex;align-items:center;gap:4px;
+    background:rgba(255,255,255,.9);border:1px solid #eef2f9;border-radius:999px;
+    padding:4px 10px;box-shadow:0 2px 10px rgba(22,35,58,.05);
+    font-size:12px;color:var(--ink-3);white-space:nowrap;
+  }
+  .crumbs[hidden]{display:none;}
+  .crumbs .sep{color:#c7d3e6;margin:0 2px;}
+  .crumbs button{
+    border:0;background:transparent;padding:2px 6px;border-radius:999px;
+    font-size:12px;font-weight:500;color:var(--ink-2);box-shadow:none;
+  }
+  .crumbs button:hover{background:#eef4ff;color:var(--accent);transform:none;box-shadow:none;}
+  .crumbs .cur{color:var(--accent);font-weight:700;padding:2px 6px;}
+
+  /* ---------- 右侧排行 ---------- */
+  .rail{
+    width:264px;flex:0 0 264px;align-self:stretch;
+    border-left:1px solid #eef2f9;padding:18px 18px 10px 20px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .rail h2{
+    margin:0 0 2px;font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.02em;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .rail h2 em{font-style:normal;font-size:11px;font-weight:500;color:var(--ink-3);}
+  .rank{display:flex;flex-direction:column;gap:7px;margin-top:2px;}
+  .rank-item{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:12px;}
+  .rank-item .nm{color:var(--ink-2);display:flex;align-items:center;gap:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rank-item .dot{width:7px;height:7px;border-radius:50%;flex:0 0 7px;}
+  .rank-item .vl{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;text-align:right;}
+  .rank-item .vl i{font-style:normal;font-weight:500;font-size:11px;color:var(--ink-3);margin-left:5px;}
+  .rank-item .bar{grid-column:1 / -1;height:4px;border-radius:3px;background:#f1f5fb;overflow:hidden;}
+  .rank-item .bar i{display:block;height:100%;border-radius:3px;}
+  .rail .note{
+    margin-top:auto;font-size:11px;line-height:1.7;color:var(--ink-3);
+    border-top:1px dashed #e9eff8;padding-top:10px;
+  }
+  .rail .note b{color:var(--ink-2);font-weight:600;}
+
+  .tip{
+    display:flex;justify-content:center;gap:18px;flex-wrap:wrap;
+    padding:2px 0 12px;font-size:12px;color:var(--ink-3);
+  }
+  .tip span::before{content:"·";margin-right:14px;color:#c3cee0;}
+  .tip span:first-child::before{content:"";margin:0;}
+
+  @media (max-width:1180px){
+    .stats{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .rail{display:none;}
+  }
+  @media (max-width:760px){
+    .app{padding:18px;}
+    h1{font-size:21px;}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr));}
+    #chart{min-height:440px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">数据可视化 · 旭日图</div>
+      <h1>嘉兴大学 2026 级新生规模分布</h1>
+      <p class="sub">共 <b>__TOTAL_TEXT__</b> 名本科新生 · <b>__N_COLLEGE__</b> 个学院 · <b>__N_MAJOR__</b> 个专业 · 点击学院扇区即可下钻查看专业构成</p>
+    </div>
+    <div class="actions">
+      <button id="btn-reset">返回总览</button>
+      <button id="btn-export" class="primary">导出 PNG</button>
+    </div>
+  </header>
+
+  <section class="stats">
+    <div class="stat">
+      <span class="k">新生总数</span>
+      <span class="row"><span class="v">__TOTAL_TEXT__</span><span class="u">人</span></span>
+    </div>
+    <div class="stat">
+      <span class="k">学院数</span>
+      <span class="row"><span class="v">__N_COLLEGE__</span><span class="u">个</span></span>
+    </div>
+    <div class="stat">
+      <span class="k">专业数</span>
+      <span class="row"><span class="v">__N_MAJOR__</span><span class="u">个</span></span>
+    </div>
+    <div class="stat">
+      <span class="k">规模最大专业</span>
+      <span class="row"><span class="v sm">__TOP_MAJOR_NAME__</span><span class="u">__TOP_MAJOR_N__ 人 · __TOP_MAJOR_PCT__%</span></span>
+    </div>
+    <div class="stat">
+      <span class="k">规模最大学院</span>
+      <span class="row"><span class="v sm">__TOP_COLLEGE_NAME__</span><span class="u">__TOP_COLLEGE_N__ 人 · __TOP_COLLEGE_PCT__%</span></span>
+    </div>
+  </section>
+
+  <main class="card">
+    <div class="body">
+      <div class="chart-wrap">
+        <div id="chart"></div>
+        <div class="center-label" id="centerLabel">
+          <span class="cl-name">2026级总览</span>
+          <span class="cl-num">__TOTAL_TEXT__<i>人</i></span>
+        </div>
+        <div class="crumbs" id="crumbs" hidden>
+          <button data-id="root">2026级总览</button>
+        </div>
+      </div>
+      <aside class="rail">
+        <h2>学院规模排行 <em>人数 / 占比</em></h2>
+        <div class="rank">
+          __RAIL_ITEMS__
+        </div>
+        <div class="note">
+          数据口径：<b>2026 级本科新生</b>，共 __TOTAL_TEXT__ 人；<br>
+          图上标签为简称，悬停可见官方全称与占比。
+        </div>
+      </aside>
+    </div>
+    <div class="tip">
+      <span>悬停查看人数与占比</span>
+      <span>点击扇区逐层下钻</span>
+      <span>点击底部路径返回上级</span>
+    </div>
+  </main>
+</div>
+
+<script>__ECHARTS_JS__</script>
+<script>
+  const TOTAL = __TOTAL__;
+  const OPTION = __OPTION_JSON__;
+  const ROOT_NODE = OPTION.series[0].data[0];
+  window.__viewRootId = 'root';   // 供标签 formatter 判断「当前视图的根」，避免中心重复文字
+
+  const el = document.getElementById('chart');
+  const centerEl = document.getElementById('centerLabel');
+  const crumbsEl = document.getElementById('crumbs');
+  const chart = echarts.init(el, null, {renderer: 'canvas'});
+
+  const resize = () => {
+    const top = document.querySelector('.card').getBoundingClientRect().top;
+    const h = Math.max(520, window.innerHeight - top - 46);
+    el.style.height = h + 'px';
+    chart.resize();
+  };
+
+  const fmt = n => Number(n).toLocaleString('en-US');
+  const setCenter = (name, value) => {
+    centerEl.innerHTML = '<span class="cl-name">' + name + '</span>' +
+                         '<span class="cl-num">' + fmt(value) + '<i>人</i></span>';
+  };
+
+  // id -> {node, parent}
+  const index = {};
+  (function walk(node, parent) {
+    index[node.id] = {node, parent};
+    (node.children || []).forEach(c => walk(c, node));
+  })(ROOT_NODE, null);
+
+  // 面包屑：总览 › 学院
+  const renderCrumbs = collegeId => {
+    if (!collegeId) { crumbsEl.hidden = true; return; }
+    const rec = index[collegeId];
+    crumbsEl.hidden = false;
+    crumbsEl.innerHTML = '<button data-id="root">2026级总览</button>' +
+                         '<span class="sep">›</span>' +
+                         '<span class="cur">' + (rec.node.displayName || rec.node.name) + '</span>';
+  };
+
+  const gotoRoot = () => {
+    chart.clear();
+    chart.setOption(OPTION);
+    resize();
+    setCenter(ROOT_NODE.name, ROOT_NODE.value);
+    renderCrumbs(null);
+  };
+
+  // 下钻视图：以该学院为根重新建一棵树，中心留白 + 单圈专业
+  const drillOption = collegeId => {
+    const c = index[collegeId].node;
+    return {
+      backgroundColor: '#ffffff',
+      animationDuration: 600,
+      animationDurationUpdate: 450,
+      animationEasing: 'cubicOut',
+      tooltip: OPTION.tooltip,
+      series: [{
+        type: 'sunburst',
+        radius: ['26%', '90%'],
+        center: ['50%', '50%'],
+        sort: 'desc',
+        clockwise: true,
+        startAngle: 90,
+        nodeClick: false,
+        highlightPolicy: 'ancestor',
+        data: [{
+          name: c.name, value: c.value, id: c.id,
+          itemStyle: {color: '#ffffff', borderColor: '#e8eef7', borderWidth: 1},
+          children: c.children.map(m => ({...m}))
+        }],
+        label: {
+          show: true, rotate: 'radial', fontSize: 11.5, color: '#33445f',
+          width: 120, overflow: 'truncate',
+          formatter: p => (p.treePathInfo && p.treePathInfo.length > 2) ? (p.name + '  ' + p.value) : ''
+        },
+        itemStyle: {borderColor: '#ffffff', borderWidth: 2},
+        emphasis: {
+          focus: 'self',
+          itemStyle: {borderColor: '#2f6fed', borderWidth: 2.5},
+          label: {fontWeight: 700}
+        },
+        levels: [
+          {},
+          {r0: '0%', r: '26%',
+           label: {show: false},
+           itemStyle: {color: '#ffffff', borderColor: '#e8eef7', borderWidth: 1}},
+          {r0: '26%', r: '90%',
+           label: {rotate: 'radial', fontSize: 11.5},
+           itemStyle: {borderColor: '#ffffff', borderWidth: 2}}
+        ]
+      }]
+    };
+  };
+
+  const drillTo = collegeId => {
+    const rec = index[collegeId];
+    if (!rec) return;
+    chart.clear();
+    chart.setOption(drillOption(collegeId));
+    resize();
+    setCenter(rec.node.displayName || rec.node.name, rec.node.value);
+    renderCrumbs(collegeId);
+  };
+
+  chart.setOption(OPTION);
+  resize();
+  window.addEventListener('resize', resize);
+
+  chart.on('click', function (p) {
+    const d = p.data;
+    if (!d || !d.id || !index[d.id]) return;
+    const rec = index[d.id];
+    if (rec.node.children && rec.node.children.length) {
+      drillTo(d.id);                                   // 点学院 → 下钻
+    } else if (rec.parent && rec.parent.id !== 'root') {
+      setCenter(rec.parent.displayName || rec.parent.name, rec.parent.value);
+    }
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', gotoRoot);
+  crumbsEl.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (b) gotoRoot();
+  });
+
+  document.getElementById('btn-export').addEventListener('click', () => {
+    const url = chart.getDataURL({type: 'png', pixelRatio: 2.5, backgroundColor: '#ffffff'});
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '嘉兴大学2026级新生旭日图.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+
+  // #学院名 直达（便于分享定位与截图）
+  const hash = decodeURIComponent(location.hash.replace(/^#/, ''));
+  if (hash && index[hash]) {
+    setTimeout(() => drillTo(hash), 420);
+  }
+</script>
+</body>
+</html>
